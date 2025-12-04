@@ -3,11 +3,12 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install production dependencies
 COPY package*.json ./
-
-# Install production dependencies
 RUN npm ci --only=production
+
+# Copy app source into builder (so server.js and all assets are present)
+COPY . .
 
 # Runtime stage
 FROM node:18-alpine
@@ -16,7 +17,7 @@ WORKDIR /app
 
 # Copy node_modules and app files from builder
 COPY --from=builder /app/node_modules ./node_modules
-COPY . .
+COPY --from=builder /app .
 
 # Expose port 3000
 EXPOSE 3000
