@@ -5,7 +5,8 @@ WORKDIR /app
 
 # Copy package files and install production dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --omit=dev
+# RUN npm ci --only=production
 
 # Copy app source into builder (so server.js and all assets are present)
 COPY . .

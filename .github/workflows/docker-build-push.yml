@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     
     steps:
       - name: Checkout code
@@ -33,7 +34,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKER_USERNAME }}/dvop400-workflows
+          images: ${{ secrets.DOCKER_USERNAME }}/dvop400-final
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -51,3 +52,20 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: dvop-finalcluster
+          location: us-central1
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl set image deployment/dvop-app dvop-app=${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
+          kubectl rollout status deployment/dvop-app
