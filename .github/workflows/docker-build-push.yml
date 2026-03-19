@@ -57,7 +57,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          audience: https://iam.googleapis.com/projects/883005216404/locations/global/workloadIdentityPools/github-pool/providers/github
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v3
