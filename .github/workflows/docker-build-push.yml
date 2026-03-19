@@ -36,8 +36,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/dvop400-final
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=sha,prefix=
             type=raw,value=latest
 
       - name: Build and push multi-platform image
@@ -66,5 +65,5 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/dvop-app dvop-app=${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
+          kubectl set image deployment/dvop-app dvop-app=${{ secrets.DOCKER_USERNAME }}/dvop400-final:sha-${GITHUB_SHA}
           kubectl rollout status deployment/dvop-app
