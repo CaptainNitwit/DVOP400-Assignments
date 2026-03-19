@@ -18,6 +18,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Debug source being built
+        run: |
+          git rev-parse HEAD
+          echo "---- Checking index.html ----"
+          grep -n "<title>\|<h1>" index.html || echo "index.html not found"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -37,6 +43,8 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          pull: true
+          no-cache: true
           tags: ${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
 
       - name: Authenticate to Google Cloud
