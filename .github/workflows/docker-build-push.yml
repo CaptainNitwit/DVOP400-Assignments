@@ -36,7 +36,6 @@ jobs:
         with:
           images: ${{ secrets.DOCKER_USERNAME }}/dvop400-final
           tags: |
-            type=sha,prefix=
             type=raw,value=latest
 
       - name: Build and push multi-platform image
