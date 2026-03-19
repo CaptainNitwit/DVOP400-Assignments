@@ -20,9 +20,12 @@ jobs:
 
       - name: Debug source being built
         run: |
-          git rev-parse HEAD
-          echo "---- Checking index.html ----"
+          pwd
+          ls -la
+          echo "---- index.html ----"
           grep -n "<title>\|<h1>" index.html || echo "index.html not found"
+          echo "---- Dockerfile ----"
+          sed -n '1,120p' Dockerfile
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
