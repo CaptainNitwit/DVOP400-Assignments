@@ -26,6 +26,8 @@ jobs:
           grep -n "<title>\|<h1>" index.html || echo "index.html not found"
           echo "---- Dockerfile ----"
           sed -n '1,120p' Dockerfile
+          echo "---- commit ----"
+          git rev-parse HEAD
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -48,7 +50,9 @@ jobs:
           push: true
           pull: true
           no-cache: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
+            ${{ secrets.DOCKER_USERNAME }}/dvop400-final:sha-${{ github.sha }}
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -64,6 +68,5 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl set image deployment/dvop-app dvop-app=${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
-          kubectl rollout restart deployment/dvop-app
+          kubectl set image deployment/dvop-app dvop-app=${{ secrets.DOCKER_USERNAME }}/dvop400-final:sha-${{ github.sha }}
           kubectl rollout status deployment/dvop-app
