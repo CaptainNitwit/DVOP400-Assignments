@@ -22,10 +22,10 @@ jobs:
         run: |
           pwd
           ls -la
-          echo "---- index.html ----"
-          grep -n "<title>\|<h1>" index.html || echo "index.html not found"
-          echo "---- Dockerfile ----"
-          sed -n '1,120p' Dockerfile
+          echo "---- Final Project/index.html ----"
+          grep -n "<title>\|<h1>" "Final Project/index.html" || echo "Final Project/index.html not found"
+          echo "---- Final Project/Dockerfile ----"
+          sed -n '1,120p' "Final Project/Dockerfile"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -42,8 +42,8 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./Final Project
+          file: ./Final Project/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           pull: true
