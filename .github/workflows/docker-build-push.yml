@@ -30,27 +30,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKER_USERNAME }}/dvop400-final
-          tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest
-
-      - name: Build and push multi-platform image
+      - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          tags: ${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v3
@@ -67,4 +54,5 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl set image deployment/dvop-app dvop-app=${{ secrets.DOCKER_USERNAME }}/dvop400-final:latest
+          kubectl rollout restart deployment/dvop-app
           kubectl rollout status deployment/dvop-app
